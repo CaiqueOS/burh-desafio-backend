@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('vagas', function (Blueprint $table) {
             $table->id();
-            $table->keys('empresa_id')->references('id')->on('empresas');
+            $table->foreignId('empresa_id')->constrained('empresas');
             $table->string('titulo');
             $table->string('descricao');
-            $table->string('cnpj')->unique();
             $table->enum('tipo', ['PJ', 'CLT', 'E']);
             $table->decimal('salario', 10, 2);
             $table->string('horario');
