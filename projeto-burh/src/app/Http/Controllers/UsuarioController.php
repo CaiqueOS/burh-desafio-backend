@@ -20,7 +20,15 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:usuarios',
+            'data_nascimento' => 'required|date',
+        ]);
+
+        $usuario = Usuario::create($request->all());
+
+        return response()->json($usuario, 201);
     }
 
     /**

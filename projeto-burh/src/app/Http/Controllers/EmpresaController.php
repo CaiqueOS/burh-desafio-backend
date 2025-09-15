@@ -20,7 +20,16 @@ class EmpresaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'descricao' => 'required|string',
+            'cnpj' => 'required|string|size:14|unique:empresas',
+            'plano' => 'required|in:F,P',
+        ]);
+
+        $empresa = Empresa::create($request->all());
+
+        return response()->json($empresa, 201);
     }
 
     /**

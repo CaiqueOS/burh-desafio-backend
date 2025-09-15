@@ -20,7 +20,14 @@ class CandidaturaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'usuario_id' => 'required|exists:usuarios,id',
+            'vaga_id' => 'required|exists:vagas,id',
+        ]);
+
+        $candidatura = Candidatura::create($request->all());
+
+        return response()->json($candidatura, 201);
     }
 
     /**

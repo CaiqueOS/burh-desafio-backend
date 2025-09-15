@@ -8,5 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Usuario extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'nome',
+        'email',
+        'cpf',
+        'data_nascimento',
+    ];
     //
 }

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('titulo');
             $table->string('descricao');
             $table->enum('tipo', ['PJ', 'CLT', 'E']);
-            $table->decimal('salario', 10, 2);
-            $table->string('horario');
+            $table->decimal('salario', 10, 2)->nullable();
+            $table->integer('horario')->nullable();
             $table->timestamps();
         });
     }
