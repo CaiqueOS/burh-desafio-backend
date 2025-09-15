@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmpresaResource;
+use App\Http\Requests\StoreEmpresaRequest;
+
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 
@@ -12,40 +15,31 @@ class EmpresaController extends Controller
      */
     public function index()
     {
-        //
+        $empresas = Empresa::all();
+        return EmpresaResource::collection($empresas);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEmpresaRequest $request)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'descricao' => 'required|string',
-            'cnpj' => 'required|string|size:14|unique:empresas',
-            'plano' => 'required|in:F,P',
-        ]);
-
-        $empresa = Empresa::create($request->all());
-
-        return response()->json($empresa, 201);
+        $empresa = Empresa::create($request->validated());
+        return new EmpresaResource($empresa, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Empresa $empresa)
     {
-        //
+        return new EmpresaResource($empresa);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Empresa $empresa)
+    public function update(StoreEmpresaRequest $request, Empresa $empresa)
     {
-        //
+        $empresa->update($request->validated());
+        return new EmpresaResource($empresa, 201);
     }
 
     /**
@@ -53,6 +47,7 @@ class EmpresaController extends Controller
      */
     public function destroy(Empresa $empresa)
     {
-        //
+        $empresa->delete();
+        return response()->json(null, 204);
     }
 }

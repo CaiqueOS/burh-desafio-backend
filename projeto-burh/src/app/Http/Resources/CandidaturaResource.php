@@ -14,12 +14,11 @@ class CandidaturaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request)
-        {
+        return [ 
             'vaga_id' => $this->vaga_id,
             'usuario_id' => $this->usuario_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-        };
+        ];
     }
 }

@@ -14,8 +14,7 @@ class VagaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request)
-        {
+        return [
             'empresa_id' => $this->empresa_id,
             'id' => $this->id,
             'titulo' => $this->titulo,
@@ -25,6 +24,6 @@ class VagaResource extends JsonResource
             'horario' => $this->horario,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-        };
+        ];
     }
 }

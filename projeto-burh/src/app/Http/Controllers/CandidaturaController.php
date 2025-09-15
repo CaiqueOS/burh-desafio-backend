@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CandidaturaResource;
+use App\Http\Requests\StoreCandidaturaRequest;
+
 use App\Models\Candidatura;
 use Illuminate\Http\Request;
 
@@ -12,38 +15,31 @@ class CandidaturaController extends Controller
      */
     public function index()
     {
-        //
+        $candidaturas = Candidatura::all();
+        return CandidaturaResource::collection($candidaturas);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCandidaturaRequest $request)
     {
-        $request->validate([
-            'usuario_id' => 'required|exists:usuarios,id',
-            'vaga_id' => 'required|exists:vagas,id',
-        ]);
-
-        $candidatura = Candidatura::create($request->all());
-
-        return response()->json($candidatura, 201);
+        $candidatura = Candidatura::create($request->validated());
+        return new CandidaturaResource($candidatura, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Candidatura $candidatura)
     {
-        //
+        return new CandidaturaResource($candidatura);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Candidatura $candidatura)
+    public function update(StoreCandidaturaRequest $request, Candidatura $candidatura)
     {
-        //
+        $candidatura->update($request->validated());
+        return new CandidaturaResource($candidatura, 201);
     }
 
     /**
@@ -51,6 +47,7 @@ class CandidaturaController extends Controller
      */
     public function destroy(Candidatura $candidatura)
     {
-        //
+        $candidatura->delete();
+        return response()->json(null, 204);
     }
 }

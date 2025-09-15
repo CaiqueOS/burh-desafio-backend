@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
 
         Usuario::factory(10)->create();
         Empresa::factory(10)->create();
-        Vaga::factory(10)->create();
+        // Vaga::factory(10)->create();
         // Usuario::factory(10)->create();
     }
 }

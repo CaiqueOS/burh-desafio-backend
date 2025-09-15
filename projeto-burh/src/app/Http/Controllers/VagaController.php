@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\VagaResource;
+use App\Http\Requests\StoreVagaRequest;
+
 use App\Models\Vaga;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
@@ -13,57 +16,53 @@ class VagaController extends Controller
      */
     public function index()
     {
-        //
+        $vagas = Vaga::all();
+        return VagaResource::collection($vagas);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreVagaRequest $request)
     {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descricao' => 'required|string',
-            'salario' => 'numeric',
-            'horario' => 'numerico',
-            'tipo' => 'required|in:CLT,PJ,E',
-            'empresa_id' => 'required|exists:empresas,id',
-        ]);
-
-        if(in_array($request->tipo, ['CLT', 'E']) && (!$request->has('salario') || !$request->has('horario'))) {
-            return response()->json(['error' => 'Salário e horário são obrigatórios para vagas do tipo CLT e Estágio.'], 422);
-        }else if($request->tipo === 'CLT' && $request->salario < 1212) {
-            return response()->json(['error' => 'O salário mínimo para vagas do tipo CLT é R$ 1212.'], 422);
-        }else if($request->tipo === 'E' && $request->horario < 6) {
-            return response()->json(['error' => 'O horário mínimo para vagas do tipo Estágio é 6 horas.'], 422);
+        if($this->validarSalarioHorario($request)) {
+            return $this->validarSalarioHorario($request);
         }
 
         $empresa = Empresa::find($request->empresa_id);
+        $mensagem = '';
         if($empresa->plano === 'F' && $empresa->vagas()->count() >= 5) {
-            return response()->json(['error' => 'O plano Free permite até 5 vagas ativas.'], 403);
+            $mensagem = 'O plano Free permite até 5 vagas.';
         } else if($empresa->plano === 'P' && $empresa->vagas()->count() >= 10) {
-            return response()->json(['error' => 'O plano Premium permite até 20 vagas ativas.'], 403);
+            $mensagem = 'O plano Premium permite até 10 vagas.';
         }
 
-        $vaga = Vaga::create($request->all());
+        if (!empty($mensagem)) {
+            $mensagem = $this->validarStringUtf8($mensagem);
+            return response()->json(['error' => $mensagem], 422);
+        }
 
-        return response()->json($vaga, 201);
-    }
+        $vaga = Vaga::create($request->validated());
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vaga $vaga)
-    {
-        //
+        return new VagaResource($vaga, 201);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vaga $vaga)
+    public function update(StoreVagaRequest $request, Vaga $vaga)
     {
-        //
+        if($this->validarSalarioHorario($request)) {
+            return $this->validarSalarioHorario($request);
+        }
+
+        $vaga->update($request->validated());
+        return new VagaResource($vaga, 201);
+    }
+
+    public function show(Vaga $vaga)
+    {
+        return new VagaResource($vaga);
     }
 
     /**
@@ -71,6 +70,25 @@ class VagaController extends Controller
      */
     public function destroy(Vaga $vaga)
     {
-        //
+        $vaga->delete();
+        return response()->json(null, 204);
+    }
+
+    private function validarSalarioHorario(StoreVagaRequest $vaga) {
+        $mensagem = '';
+        if(in_array($vaga->tipo, ['CLT', 'E']) && (!$vaga->has('salario') || !$vaga->has('horario'))) {
+            $mensagem = 'Salário e horário são obrigatórios para vagas do tipo CLT e Estágio.';
+        }else if($vaga->tipo === 'CLT' && $vaga->salario < 1212) {
+            $mensagem = 'O salário mínimo para vagas do tipo CLT é de R$ 1212,00.';
+        }else if($vaga->tipo === 'E' && $vaga->horario > 6) {
+            $mensagem = 'O horário máximo para vagas do tipo Estágio é de 6 horas.';
+        }
+
+        if (!empty($mensagem)) {
+            $mensagem = $this->validarStringUtf8($mensagem);
+            return response()->json(['error' => $mensagem], 422);
+        }
+
+        return null;
     }
 }
