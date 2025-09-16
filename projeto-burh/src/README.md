@@ -54,3 +54,7 @@ Para rodar os testes:
 ```
 php artisan test
 ```
+
+## Documentação
+
+Eu fiz uma documentação para a API utilizando Swagger, para acessar, utilizar o link <a href="http://localhost:8000/api/documentation">`http://localhost:8000/api/documentation`</a>.
