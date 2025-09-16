@@ -28,4 +28,11 @@ class StoreEmpresaRequest extends FormRequest
             'plano' => ['required', 'in:F,P'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'cnpj.unique' => 'O CNPJ ja esta em uso.',
+        ];
+    }
 }

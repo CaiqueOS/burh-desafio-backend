@@ -11,7 +11,19 @@ use Illuminate\Http\Request;
 class UsuarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/usuarios",
+     *     summary="Pegar todos os usuarios",
+     *     tags={"Usuarios"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/UsuarioResource")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -20,17 +32,63 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/usuarios",
+     *     summary="Criar um novo usuario",
+     *     tags={"Usuarios"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Usuario"),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuario criado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisição invalida"
+     *     )
+     * )
      */
     public function store(StoreUsuarioRequest $request)
     {
+
+        dd($request->validated());
         $usuario = Usuario::create($request->validated());
 
         return new UsuarioResource($usuario, 201);
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/usuarios/{id}",
+     *     summary="Atualizar um usuario existente",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Usuario")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario atualizado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisiçao invalida"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario nao encontrado"
+     *     )
+     * )
      */
     public function update(StoreUsuarioRequest $request, Usuario $usuario)
     {
@@ -38,13 +96,57 @@ class UsuarioController extends Controller
         return new UsuarioResource($usuario, 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/usuarios/{id}",
+     *     summary="Pegar um usuario pelo ID",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisicao invalida"
+     *     )
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario nao encontrado"
+     *     )
+     * )
+     */
     public function show(Usuario $usuario)
     {
         return new UsuarioResource($usuario);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/usuarios/{id}",
+     *     summary="Deletar um usuario",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Usuario deletado com sucesso"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario nao encontrado"
+     *     )
+     * )
      */
     public function destroy(Usuario $usuario)
     {
@@ -52,6 +154,43 @@ class UsuarioController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/usuarios/search",
+     *     summary="Buscar usuarios por nome, email ou cpf",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="nome",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="cpf",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/UsuarioResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisicao invalida"
+     *     )
+     * )
+     */
     public function search(Request $request) {
         
         $query = Usuario::query();
@@ -69,10 +208,6 @@ class UsuarioController extends Controller
         }
 
         $usuarios = $query->get();
-        foreach($usuarios as $usuario) {
-            $usuario->idade = $usuario->idade();
-            $usuario->vagasCandidatas = $usuario->vagasCandidatas();
-        }
 
         return UsuarioResource::collection($usuarios);
     }

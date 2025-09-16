@@ -12,7 +12,19 @@ use Illuminate\Http\Request;
 class VagaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/vagas",
+     *     summary="Pegar todas as vagas",
+     *     tags={"Vagas"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/VagaResource")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -21,7 +33,24 @@ class VagaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/vagas",
+     *     summary="Criar uma nova vaga",
+     *     tags={"Vagas"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Vaga"),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Vaga criada com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/VagaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisicao invalida"
+     *     )
+     * )
      */
     public function store(StoreVagaRequest $request)
     {
@@ -48,7 +77,30 @@ class VagaController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/vagas/{id}",
+     *     summary="Atualizar uma vaga existente",
+     *     tags={"Vagas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Vaga")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Vaga atualizada com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/VagaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisicao invalida"
+     *     )
+     * )
      */
     public function update(StoreVagaRequest $request, Vaga $vaga)
     {
@@ -60,13 +112,53 @@ class VagaController extends Controller
         return new VagaResource($vaga, 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/vagas/{id}",
+     *     summary="Pegar uma vaga pelo ID",
+     *     tags={"Vagas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(ref="#/components/schemas/VagaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Vaga nao encontrada"
+     *     )
+     * )
+     */
     public function show(Vaga $vaga)
     {
         return new VagaResource($vaga);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/vagas/{id}",
+     *     summary="Deletar uma vaga pelo ID",
+     *     tags={"Vagas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Vaga deletada com sucesso"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Vaga nao encontrada"
+     *     )
+     * )
      */
     public function destroy(Vaga $vaga)
     {

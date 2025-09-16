@@ -7,6 +7,18 @@ use App\Models\VagaResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @OA\Schema(
+ *     schema="Usuario",
+ *     type="object",
+ *     title="Usuario",
+ *     required={"nome", "email", "cpf"},
+ *     @OA\Property(property="nome", type="string", example="Caique Oliveira"),
+ *     @OA\Property(property="email", type="string", example="caique@gmail.com"),
+ *     @OA\Property(property="cpf", type="string", example="123.456.789-00"),
+ *     @OA\Property(property="data_nascimento", type="string", format="date", example="1990-01-01"),
+ * )
+ */
 class Usuario extends Model
 {
     use HasFactory;

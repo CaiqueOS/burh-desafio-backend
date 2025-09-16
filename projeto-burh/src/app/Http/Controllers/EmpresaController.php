@@ -11,7 +11,19 @@ use Illuminate\Http\Request;
 class EmpresaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/empresas",
+     *     summary="Pegar todas as empresas",
+     *     tags={"Empresas"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/EmpresaResource")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -20,7 +32,23 @@ class EmpresaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/empresas",
+     *     summary="Criar uma nova empresa",
+     *     tags={"Empresas"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Empresa")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Empresa criada",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *     )
+     * )
      */
     public function store(StoreEmpresaRequest $request)
     {
@@ -28,13 +56,62 @@ class EmpresaController extends Controller
         return new EmpresaResource($empresa, 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/empresas/{id}",
+     *     summary="Pegar uma empresa por ID",
+     *     tags={"Empresas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operacao bem-sucedida",
+     *         @OA\JsonContent(ref="#/components/schemas/EmpresaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Empresa nao encontrada"
+     *     )
+     * )
+     */
     public function show(Empresa $empresa)
     {
         return new EmpresaResource($empresa);
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/empresas/{id}",
+     *     summary="Atualizar uma empresa existente",
+     *     tags={"Empresas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Empresa")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Empresa atualizada",
+     *         @OA\JsonContent(ref="#/components/schemas/EmpresaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Empresa nao encontrada"
+     *     )
+     * )
      */
     public function update(StoreEmpresaRequest $request, Empresa $empresa)
     {
@@ -43,7 +120,25 @@ class EmpresaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/empresas/{id}",
+     *     summary="Deletar uma empresa",
+     *     tags={"Empresas"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Empresa deletada",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Empresa nao encontrada"
+     *     )
+     * )
      */
     public function destroy(Empresa $empresa)
     {

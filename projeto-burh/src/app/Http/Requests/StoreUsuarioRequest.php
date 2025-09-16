@@ -24,8 +24,16 @@ class StoreUsuarioRequest extends FormRequest
         return [
             'nome' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios'],
-            'data_nascimento' => ['required', 'date'],
+            'data_nascimento' => ['date'],
             'cpf' => ['required', 'string', 'size:11', 'unique:usuarios'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'O email ja esta em uso.',
+            'cpf.unique' => 'O CPF ja esta em uso.',
         ];
     }
 }
